@@ -124,4 +124,54 @@ contract WangDexTest is Test {
         assertEq(nativeBalance, 1 ether, "balancesOf native mismatch");
         assertEq(tokenBalance, 100 ether, "balancesOf token mismatch");
     }
+
+    function testCreateOrderStoresDataAndEmitsEvent() public {
+        address fromToken = address(token);
+        address toToken = address(0xBEEF);
+        uint256 fromAmount = 10 ether;
+        uint256 toAmount = 20 ether;
+
+        // 先给 user 足够的 fromToken，并存入 dex，以后可以扩展成下单时锁定余额
+        token.transfer(user, 100 ether);
+        vm.startPrank(user);
+        token.approve(address(dex), 50 ether);
+        dex.depositToken(fromToken, 50 ether);
+
+        // 期望事件
+        vm.expectEmit(true, true, true, true);
+        emit WangDex.CreateOrder(
+            0, // 当前 orderId 初始为 0
+            user,
+            fromToken,
+            toToken,
+            fromAmount,
+            toAmount,
+            block.timestamp
+        );
+
+        dex.createOrder(fromToken, toToken, fromAmount, toAmount);
+        vm.stopPrank();
+
+        // 校验存储的订单数据
+        (
+            uint256 id,
+            address orderUser,
+            address storedFromToken,
+            address storedToToken,
+            uint256 storedFromAmount,
+            uint256 storedToAmount,
+            uint256 ts
+        ) = dex.orders(0);
+
+        assertEq(id, 0, "order id mismatch");
+        assertEq(orderUser, user, "order user mismatch");
+        assertEq(storedFromToken, fromToken, "fromToken mismatch");
+        assertEq(storedToToken, toToken, "toToken mismatch");
+        assertEq(storedFromAmount, fromAmount, "fromAmount mismatch");
+        assertEq(storedToAmount, toAmount, "toAmount mismatch");
+        assertEq(ts, block.timestamp, "timestamp mismatch");
+
+        // orderId 自增
+        assertEq(dex.orderId(), 1, "orderId not incremented");
+    }
 }

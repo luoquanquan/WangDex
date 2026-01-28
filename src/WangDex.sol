@@ -11,9 +11,32 @@ contract WangDex {
     // Events
     event Deposit(address indexed user, address indexed token, uint256 amount);
     event Withdraw(address indexed user, address indexed token, uint256 amount);
+    event CreateOrder(
+        uint256 indexed id,
+        address indexed user,
+        address fromToken,
+        address toToken,
+        uint256 fromAmount,
+        uint256 toAmount,
+        uint256 timestamp
+    );
 
     // user => token => amount
     mapping(address => mapping(address => uint256)) public balances;
+
+    struct OrderStruct {
+        uint256 id;
+        address user;
+        address fromToken;
+        address toToken;
+        uint256 fromAmount;
+        uint256 toAmount;
+        uint256 timestamp;
+    }
+
+    uint256 public orderId = 0;
+    // id => order
+    mapping(uint256 => OrderStruct) public orders;
 
     constructor() {}
 
@@ -59,5 +82,34 @@ contract WangDex {
         address token
     ) public view returns (uint256) {
         return balances[user][token];
+    }
+
+    function createOrder(
+        address fromToken,
+        address toToken,
+        uint256 fromAmount,
+        uint256 toAmount
+    ) public {
+        orders[orderId] = OrderStruct({
+            id: orderId,
+            user: msg.sender,
+            fromToken: fromToken,
+            toToken: toToken,
+            fromAmount: fromAmount,
+            toAmount: toAmount,
+            timestamp: block.timestamp
+        });
+
+        emit CreateOrder(
+            orderId,
+            msg.sender,
+            fromToken,
+            toToken,
+            fromAmount,
+            toAmount,
+            block.timestamp
+        );
+
+        orderId++;
     }
 }
