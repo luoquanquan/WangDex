@@ -22,5 +22,13 @@ contract WangTokenScript is Script {
         vm.stopBroadcast();
 
         console.log("WangToken deployed at:", address(token));
+
+        // 将合约地址写入前端项目（frontend/src/contracts/addresses.json）
+        string[] memory cmd = new string[](4);
+        cmd[0] = "node";
+        cmd[1] = "scripts/update-addresses.cjs";
+        cmd[2] = "WangToken";
+        cmd[3] = vm.toString(address(token));
+        vm.ffi(cmd);
     }
 }
