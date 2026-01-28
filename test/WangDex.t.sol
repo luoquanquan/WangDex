@@ -103,4 +103,25 @@ contract WangDexTest is Test {
             "dex token balance not reduced"
         );
     }
+
+    function testBalancesOfForNativeAndToken() public {
+        // user 存入 1 ETH
+        deal(user, 10 ether);
+        vm.prank(user);
+        dex.depositNative{value: 1 ether}();
+
+        // user 存入 100 token
+        token.transfer(user, 1_000 ether);
+        vm.startPrank(user);
+        token.approve(address(dex), 100 ether);
+        dex.depositToken(address(token), 100 ether);
+        vm.stopPrank();
+
+        // 使用 balancesOf 读取
+        uint256 nativeBalance = dex.balancesOf(user, dex.NATIVE_TOKEN());
+        uint256 tokenBalance = dex.balancesOf(user, address(token));
+
+        assertEq(nativeBalance, 1 ether, "balancesOf native mismatch");
+        assertEq(tokenBalance, 100 ether, "balancesOf token mismatch");
+    }
 }

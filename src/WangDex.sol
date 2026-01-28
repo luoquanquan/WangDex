@@ -53,4 +53,11 @@ contract WangDex {
         require(ok, "Token transfer failed");
         emit Withdraw(msg.sender, token, amount);
     }
+
+    function balancesOf(
+        address user,
+        address token
+    ) public view returns (uint256) {
+        return balances[user][token];
+    }
 }
