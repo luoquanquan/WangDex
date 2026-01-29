@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Layout, Typography, Button } from "antd";
+import { useDisconnect, useConnection } from "wagmi";
+import Connect from "./components/Connect";
+import Dashboard from "./components/Dashboard";
+
+const { Header, Content, Footer } = Layout;
+const { Title, Text } = Typography;
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { isConnected } = useConnection();
+  const { mutate: disconnect } = useDisconnect();
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Layout style={{ minHeight: "100vh" }}>
+      <Header
+        style={{
+          background: "#0f172a",
+          paddingInline: 24,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Title level={3} style={{ color: "#fff", margin: 0 }}>
+          WangDex · 加密资产交易所
+        </Title>
+
+        {isConnected ? (
+          <Button size="small" onClick={() => disconnect()}>
+            断开连接
+          </Button>
+        ) : null}
+      </Header>
+      <Content style={{ padding: 24 }}>
+        {!isConnected ? <Connect /> : <Dashboard />}
+      </Content>
+      <Footer style={{ textAlign: "center", fontSize: 12 }}>
+        <Text type="secondary">
+          连接钱包后, 你可以在 WangDex 上存取款、挂单、撮合交易,
+          开始你的交易之旅吧 ~
+        </Text>
+      </Footer>
+    </Layout>
+  );
 }
 
-export default App
+export default App;
