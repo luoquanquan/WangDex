@@ -9,8 +9,8 @@ type AddressJson = {
 
 const typed = addresses as AddressJson
 
-export const WANGDEX_ADDRESS = typed.WangDex
-export const WANGTOKEN_ADDRESS = typed.WangToken
+export const WANGDEX_ADDRESS = typed.WangDex as `0x${string}`
+export const WANGTOKEN_ADDRESS = typed.WangToken as `0x${string}`
 export const WANGTOKEN_ABI = wangTokenAbi
 export const WANGDEX_ABI = wangDexAbi
 export const NATIVE_TOKEN_ADDRESS = "0x0000000000000000000000000000000000000000" as `0x${string}`

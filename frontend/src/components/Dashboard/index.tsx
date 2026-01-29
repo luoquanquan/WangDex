@@ -5,6 +5,7 @@ import { WANGTOKEN_ADDRESS } from "../../contracts";
 import { Col, Row, Statistic } from "antd";
 import useTokenBalance from "../../hooks/useTokenBalance";
 import EthInDex from "./components/EthInDex";
+import TokenInDex from "./components/TokenInDex";
 
 const Dashboard = () => {
   const { address } = useConnection();
@@ -42,6 +43,8 @@ const Dashboard = () => {
       </Col>
 
       <EthInDex />
+
+      <TokenInDex />
     </Row>
   );
 };
